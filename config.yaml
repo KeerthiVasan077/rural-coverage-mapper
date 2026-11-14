@@ -1,0 +1,102 @@
+# Rural Coverage Gap Mapper Configuration — National Deficit Analysis Edition
+# Implements DoT Audit & Open Geospatial Framework (WorldPop 100m, OpenCellID, OSM)
+
+districts:
+  - id: "bihar-sitamarhi"
+    name: "Sitamarhi & Sheohar, Bihar"
+    state: "Bihar"
+    country: "India"
+    bbox: [85.2, 26.3, 85.8, 26.9]
+    category: "congested"
+    description: "High-Population Capacity Bottleneck: ~42% rural teledensity (lowest in India). Single macro towers serve 15,000+ residents, causing catastrophic indoor data drop-offs and capacity throttling."
+
+  - id: "odisha-malkangiri"
+    name: "Malkangiri & Koraput, Odisha"
+    state: "Odisha"
+    country: "India"
+    bbox: [81.7, 18.1, 82.5, 18.9]
+    category: "zero_signal"
+    description: "Deep Rural & Tribal Zero-Signal Blackspot: Odisha leads India with 1,789 4G-unconnected villages. Rugged Eastern Ghats forest terrain with 0 cell towers across Scheduled Tribe habitations."
+
+  - id: "up-shravasti"
+    name: "Shravasti & Bahraich (Terai Belt), Uttar Pradesh"
+    state: "Uttar Pradesh"
+    country: "India"
+    bbox: [81.5, 27.4, 82.2, 28.0]
+    category: "congested"
+    description: "Congested Rural Terai Plain: Dense contiguous agrarian settlements with ~48% rural teledensity and massive user-to-tower ratios immediately outside national highway corridors."
+
+  - id: "meghalaya-garo"
+    name: "South Garo Hills, Meghalaya"
+    state: "Meghalaya"
+    country: "India"
+    bbox: [90.4, 25.1, 91.1, 25.6]
+    category: "zero_signal"
+    description: "Severe Topographic Shadow Zone: Crowd-sourced audits show 26.4% of villages have 0 measurable mobile signal. Deep rainforest ravines and complete lack of grid power and backhaul."
+
+  - id: "chhattisgarh-bastar"
+    name: "Bastar & Bijapur, Chhattisgarh"
+    state: "Chhattisgarh"
+    country: "India"
+    bbox: [80.6, 18.6, 81.5, 19.4]
+    category: "zero_signal"
+    description: "Deep Forest & Tribal Dead Zones: Heavy Scheduled Tribe village exclusion with extreme infrastructure scarcity across dense Dandakaranya forest corridors."
+
+  - id: "tn-jawadhu"
+    name: "Jawadhu Hills & Dharmapuri Rural, Tamil Nadu"
+    state: "Tamil Nadu"
+    country: "India"
+    bbox: [78.6, 12.2, 79.2, 12.8]
+    category: "zero_signal"
+    description: "Eastern Ghats Tribal Valley Gaps: Innermost Malayali tribal hamlets and agricultural panchayats shadowed by hill ridges from highway cellular corridors."
+
+  - id: "ka-chamarajanagar"
+    name: "Chamarajanagar & MM Hills, Karnataka"
+    state: "Karnataka"
+    country: "India"
+    bbox: [76.8, 11.8, 77.4, 12.4]
+    category: "zero_signal"
+    description: "Forest-Fringe & Wildlife Corridor Gaps: Soliga tribal settlements and agrarian clusters bordering protected wildlife reserves facing severe infrastructure hurdles."
+
+  - id: "rj-barmer"
+    name: "Barmer Rural District, Rajasthan"
+    state: "Rajasthan"
+    country: "India"
+    bbox: [71.0, 25.5, 71.8, 26.2]
+    category: "sparse"
+    description: "Dispersed Desert Hamlets: Arid desert terrain with isolated dhans and tower clusters restricted strictly along primary transit highways."
+
+data:
+  population_raster: "data/raw/ind_pop.tif"
+  opencellid_csv: "data/raw/opencellid_india.csv"
+  cache_dir: "data/cache"
+  osm_water_cache: "data/cache/osm_water_{district_id}.json"
+  
+coverage:
+  default_radius_km: 5.0
+  supported_radii:
+    NR: 4.0      # 5G New Radio macro radius
+    LTE: 5.0     # 4G LTE macro radius
+    UMTS: 6.0    # 3G UMTS macro radius
+    GSM: 7.0     # 2G GSM macro radius
+  default_k: 10
+  max_k: 30
+  min_radius_km: 1.0
+  max_radius_km: 15.0
+
+congestion:
+  # Capacity threshold: standard rural macro cell can effectively handle ~10,000 users.
+  # Beyond this, extreme contention causes indoor data dead zones.
+  default_capacity_users_per_tower: 10000
+  min_capacity: 5000
+  max_capacity: 25000
+
+optimization:
+  aggregation_threshold: 200000
+  grid_step_km: 0.5
+  max_candidates: 2000
+  filter_water_bodies: true
+
+server:
+  host: "127.0.0.1"
+  port: 8000
