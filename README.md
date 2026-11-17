@@ -2,7 +2,8 @@
 
 An end-to-end geospatial web application implementing the **DoT (Department of Telecommunications) Audit & Open Geospatial Framework** (WorldPop 100m, OpenCellID 4G/5G NR, OpenStreetMap) to model and optimize both **Zero-Signal Tribal Blackspots** and **High-Population Capacity Bottlenecks** across rural India.
 
-![Rural Connectivity Mapper Screenshot](C:/Users/Keerthi%20Vasan/.gemini/antigravity/brain/ac3bc27a-29ad-4f64-8669-a3fc074275e5/map_screenshot.png)
+
+
 
 ---
 
