@@ -1,7 +1,7 @@
 /**
- * Rural Coverage & Capacity Gap Mapper (SW-27)
+ * TerraSignal | Rural Coverage & Capacity Gap Mapper (SW-27)
  * National Deficit Framework Controller
- * Bound to Google Stitch UI Layout with Collapsible Drawer & Unified Controls
+ * Bound to Modern Telecom GIS UI (Light M3 Editorial Theme)
  */
 
 // Application State
@@ -27,6 +27,8 @@ const layerWaterGroup = L.layerGroup();
 const sidebarDrawer = document.getElementById("sidebarDrawer");
 const sidebarCollapseBtn = document.getElementById("sidebarCollapseBtn");
 const sidebarExpandBtn = document.getElementById("sidebarExpandBtn");
+const analyticsPanel = document.getElementById("analyticsPanel");
+const toggleAnalyticsBtn = document.getElementById("toggleAnalyticsBtn");
 
 const zoneSelector = document.getElementById("zoneSelector");
 const districtBadge = document.getElementById("districtBadge");
@@ -52,15 +54,6 @@ const metricUsersPerTowerSub = document.getElementById("metricUsersPerTowerSub")
 
 const deficitToggleGroup = document.getElementById("deficitToggleGroup");
 
-// Right Side Unified Floating Widget Elements
-const toolbarLayersBtn = document.getElementById("toolbarLayersBtn");
-const toolbarLegendBtn = document.getElementById("toolbarLegendBtn");
-const toolbarMinimizeBtn = document.getElementById("toolbarMinimizeBtn");
-const unifiedFloatingPanel = document.getElementById("unifiedFloatingPanel");
-const layersPanelContent = document.getElementById("layersPanelContent");
-const legendPanelContent = document.getElementById("legendPanelContent");
-const minimizeIconSvg = document.getElementById("minimizeIconSvg");
-
 const layerProposedCheck = document.getElementById("layerProposed");
 const layerDeficitsCheck = document.getElementById("layerDeficits");
 const layerExistingCoverageCheck = document.getElementById("layerExistingCoverage");
@@ -72,12 +65,10 @@ const exportCsvBtn = document.getElementById("exportCsvBtn");
 const rankedSitesList = document.getElementById("rankedSitesList");
 const rankedSitesCountBadge = document.getElementById("rankedSitesCountBadge");
 
-let activeWidgetTab = "layers"; // 'layers' | 'legend' | 'none'
-
 /**
  * Modern Slider Visual Track Fill
  */
-function updateSliderFill(slider, activeColor, trackColor = "#172554") {
+function updateSliderFill(slider, activeColor, trackColor = "#f4dde3") {
   if (!slider) return;
   const min = parseFloat(slider.min) || 0;
   const max = parseFloat(slider.max) || 100;
@@ -101,7 +92,7 @@ function toggleSidebar(collapsed) {
     }
   }
 
-  // Allow CSS transition (320ms) to complete before invalidating map size
+  // Smooth Leaflet container resize
   setTimeout(() => {
     if (map) {
       map.invalidateSize({ debounceMoveEvents: true });
@@ -110,59 +101,23 @@ function toggleSidebar(collapsed) {
 }
 
 /**
- * Right-Side Unified Floating Control Widget Tab Switcher
+ * Toggle Right Analytics Panel
  */
-function setWidgetTab(tab) {
-  if (tab === "none") {
-    if (unifiedFloatingPanel) unifiedFloatingPanel.classList.add("hidden");
-    if (toolbarLayersBtn) {
-      toolbarLayersBtn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white hover:bg-[#142244] transition border border-transparent";
-    }
-    if (toolbarLegendBtn) {
-      toolbarLegendBtn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white hover:bg-[#142244] transition border border-transparent";
-    }
-    if (minimizeIconSvg) {
-      minimizeIconSvg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>';
-    }
-    activeWidgetTab = "none";
-    return;
-  }
-
-  if (unifiedFloatingPanel) unifiedFloatingPanel.classList.remove("hidden");
-  if (minimizeIconSvg) {
-    minimizeIconSvg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>';
-  }
-
-  if (tab === "layers") {
-    if (layersPanelContent) layersPanelContent.classList.remove("hidden");
-    if (legendPanelContent) legendPanelContent.classList.add("hidden");
-    if (toolbarLayersBtn) {
-      toolbarLayersBtn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold transition bg-cyan-950/80 text-cyan-300 border border-cyan-500/50 shadow-[0_0_12px_rgba(6,182,212,0.25)]";
-    }
-    if (toolbarLegendBtn) {
-      toolbarLegendBtn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white hover:bg-[#142244] transition border border-transparent";
-    }
-    activeWidgetTab = "layers";
-  } else if (tab === "legend") {
-    if (legendPanelContent) legendPanelContent.classList.remove("hidden");
-    if (layersPanelContent) layersPanelContent.classList.add("hidden");
-    if (toolbarLegendBtn) {
-      toolbarLegendBtn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold transition bg-pink-950/80 text-pink-300 border border-pink-500/50 shadow-[0_0_12px_rgba(236,72,153,0.25)]";
-    }
-    if (toolbarLayersBtn) {
-      toolbarLayersBtn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white hover:bg-[#142244] transition border border-transparent";
-    }
-    activeWidgetTab = "legend";
-  }
+function toggleAnalytics(collapsed) {
+  if (!analyticsPanel) return;
+  analyticsPanel.classList.toggle("collapsed-panel", collapsed);
+  setTimeout(() => {
+    if (map) map.invalidateSize({ debounceMoveEvents: true });
+  }, 350);
 }
 
-// Custom SVG Icons (Reduced size 18x18, violet palette)
+// Custom SVG Icons (Harmonized with TerraSignal Theme)
 function createExistingTowerIcon(isOverloaded) {
-  const strokeColor = isOverloaded ? "#a855f7" : "#8b5cf6";
-  const circleColor = isOverloaded ? "#c084fc" : "#a78bfa";
+  const strokeColor = isOverloaded ? "#a93700" : "#953891";
+  const circleColor = isOverloaded ? "#ffebe5" : "#fab4fd";
   const svg = `
     <div class="existing-tower-icon">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${strokeColor}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="filter drop-shadow-sm">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${strokeColor}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="filter drop-shadow-sm">
         <path d="M12 2v20"></path>
         <path d="m4 22 4-15 4-5 4 5 4 15"></path>
         <path d="M6.5 17h11"></path>
@@ -176,8 +131,8 @@ function createExistingTowerIcon(isOverloaded) {
   return L.divIcon({
     html: svg,
     className: "",
-    iconSize: [18, 18],
-    iconAnchor: [9, 9]
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
   });
 }
 
@@ -205,10 +160,10 @@ function initMap(center, bbox) {
     attributionControl: true
   });
 
-  // Standard OpenStreetMap tiles (fast, crisp, no API-key watermark)
+  // Standard OpenStreetMap tiles (fast, crisp, high cartographic detail)
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 18,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" class="text-cyan-600 underline">OpenStreetMap</a> contributors'
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" class="text-primary underline">OpenStreetMap</a> contributors'
   }).addTo(map);
 
   // Add layer groups to map
@@ -226,7 +181,7 @@ function initMap(center, bbox) {
 }
 
 /**
- * Update District Callout Information Card (Key-Value Bulleted Highlights)
+ * Update District Callout Information Card
  */
 function updateDistrictCard(district) {
   if (!district) return;
@@ -236,35 +191,35 @@ function updateDistrictCard(district) {
 
   if (districtBadge) {
     if (isCongested) {
-      districtBadge.className = "inline-block px-2.5 py-1 rounded-md text-[10px] font-extrabold bg-[#b45309]/40 text-[#f59e0b] border border-[#d97706]/40 uppercase tracking-wider shadow-sm";
+      districtBadge.className = "inline-block px-2.5 py-0.5 rounded text-[10px] font-extrabold bg-tertiary-container text-tertiary border border-tertiary/30 uppercase tracking-wider";
       districtBadge.textContent = "Capacity Bottleneck Belt";
     } else if (isZeroSignal) {
-      districtBadge.className = "inline-block px-2.5 py-1 rounded-md text-[10px] font-extrabold bg-rose-950/60 text-rose-300 border border-rose-500/40 uppercase tracking-wider shadow-sm";
+      districtBadge.className = "inline-block px-2.5 py-0.5 rounded text-[10px] font-extrabold bg-error-container text-error border border-error/30 uppercase tracking-wider";
       districtBadge.textContent = "Zero-Signal Forest Blackspot";
     } else {
-      districtBadge.className = "inline-block px-2.5 py-1 rounded-md text-[10px] font-extrabold bg-cyan-950/60 text-cyan-300 border border-cyan-500/40 uppercase tracking-wider shadow-sm";
+      districtBadge.className = "inline-block px-2.5 py-0.5 rounded text-[10px] font-extrabold bg-primary-container text-primary border border-primary/30 uppercase tracking-wider";
       districtBadge.textContent = "Sparse Terrain Settlement";
     }
   }
 
   if (districtDesc) {
     const categoryLabel = isCongested ? "High-Density Bottleneck" : (isZeroSignal ? "Absolute Zero-Signal Blackspot" : "Dispersed Hamlets");
-    const primaryIssue = isCongested ? "Severe cell overload (>15k users/tower), catastrophic data throttling" : (isZeroSignal ? "Total tower absence across Scheduled Tribe habitations & dense forest" : "Isolated rural habitations with sparse highway-only cellular links");
+    const primaryIssue = isCongested ? "Severe cell overload (>15k users/tower), catastrophic data throttling" : (isZeroSignal ? "Total tower absence across Scheduled Tribe habitations & forest ravines" : "Isolated rural habitations with sparse highway-only cellular links");
     const teledensity = isCongested ? "~42% rural teledensity (lowest in India, DoT audit)" : (isZeroSignal ? "1,789 unconnected villages across rugged forest terrain" : "Sub-50% teledensity with long distance between cells");
 
     districtDesc.innerHTML = `
-      <ul class="space-y-1.5 text-[11px] text-slate-300 pt-0.5">
+      <ul class="space-y-1.5 text-[11px] text-on-surface-variant pt-0.5">
         <li class="flex items-start gap-1.5">
-          <span class="text-cyan-400 font-bold shrink-0">•</span>
-          <span><strong class="text-white font-semibold">Classification:</strong> ${categoryLabel}</span>
+          <span class="text-primary font-bold shrink-0">•</span>
+          <span><strong class="text-on-surface font-semibold">Classification:</strong> ${categoryLabel}</span>
         </li>
         <li class="flex items-start gap-1.5">
-          <span class="text-amber-400 font-bold shrink-0">•</span>
-          <span><strong class="text-white font-semibold">Deficit Threat:</strong> ${primaryIssue}</span>
+          <span class="text-tertiary font-bold shrink-0">•</span>
+          <span><strong class="text-on-surface font-semibold">Deficit Threat:</strong> ${primaryIssue}</span>
         </li>
         <li class="flex items-start gap-1.5">
-          <span class="text-rose-400 font-bold shrink-0">•</span>
-          <span><strong class="text-white font-semibold">Audit Baseline:</strong> ${teledensity}</span>
+          <span class="text-error font-bold shrink-0">•</span>
+          <span><strong class="text-on-surface font-semibold">Audit Baseline:</strong> ${teledensity}</span>
         </li>
       </ul>
     `;
@@ -292,29 +247,29 @@ async function loadExistingTowers() {
       // Tower Marker
       const marker = L.marker([lat, lon], { icon: createExistingTowerIcon(isOverloaded) });
       marker.bindPopup(`
-        <div class="text-xs text-slate-800 font-sans p-1">
-          <div class="font-bold text-slate-900 border-b pb-1 mb-1 flex items-center justify-between gap-2">
-            <span>Cell Tower (${p.radio || "LTE"})</span>
-            <span class="text-[10px] px-1.5 py-0.2 rounded font-mono ${isOverloaded ? 'bg-orange-100 text-orange-800 border border-orange-300' : 'bg-emerald-100 text-emerald-800'}">
+        <div class="text-xs text-on-surface font-sans p-1">
+          <div class="font-bold border-b pb-1 mb-1 flex items-center justify-between gap-2">
+            <span class="text-primary">Cell Tower (${p.radio || "LTE"})</span>
+            <span class="text-[10px] px-1.5 py-0.2 rounded font-mono ${isOverloaded ? 'bg-tertiary-container text-tertiary font-bold' : 'bg-primary-container text-primary font-bold'}">
               ${isOverloaded ? 'Overloaded' : 'Normal'}
             </span>
           </div>
-          <div>Location: <span class="font-mono text-slate-600">${lat.toFixed(4)}, ${lon.toFixed(4)}</span></div>
+          <div>Location: <span class="font-mono text-outline">${lat.toFixed(4)}, ${lon.toFixed(4)}</span></div>
           <div>Coverage Radius: <span class="font-semibold">${p.range_km || currentRadiusKm} km</span></div>
-          <div class="mt-1 text-slate-700">Load: <strong class="${isOverloaded ? 'text-orange-600' : 'text-slate-900'}">${users} users</strong></div>
+          <div class="mt-1">Load: <strong class="${isOverloaded ? 'text-tertiary' : 'text-on-surface'}">${users} users</strong></div>
         </div>
       `);
       layerExistingTowersGroup.addLayer(marker);
 
-      // Existing Tower Coverage Circle (Soft violet buffer)
+      // Existing Tower Coverage Circle
       const radiusMeters = (p.range_km ? p.range_km : currentRadiusKm) * 1000;
       const circle = L.circle([lat, lon], {
         radius: radiusMeters,
-        color: "#8B5CF6",
-        weight: 1.2,
+        color: "#953891",
+        weight: 1.4,
         dashArray: "5, 5",
-        fillColor: "#A78BFA",
-        fillOpacity: 0.08
+        fillColor: "#fab4fd",
+        fillOpacity: 0.1
       });
       layerExistingCoverageGroup.addLayer(circle);
     });
@@ -338,7 +293,7 @@ async function loadWaterBodies() {
         style: {
           color: "#0284c7",
           weight: 1.5,
-          fillColor: "#38bdf8",
+          fillColor: "#bae6fd",
           fillOpacity: 0.35
         },
         onEachFeature: (feature, layer) => {
@@ -372,20 +327,20 @@ function renderDeficits() {
     const isZero = p.gap_type === "zero_signal" || p.uncovered === true;
     const pop = Math.round(p.population || 0);
 
-    const color = isZero ? "#ef4444" : "#f97316";
-    const fillColor = isZero ? "#f87171" : "#fb923c";
+    const color = isZero ? "#ba1a1a" : "#a93700";
+    const fillColor = isZero ? "#ffdad6" : "#ffebe5";
 
     const circle = L.circleMarker([lat, lon], {
       radius: Math.min(10, Math.max(3.5, Math.sqrt(pop) * 0.45)),
       color: color,
       weight: 1,
       fillColor: fillColor,
-      fillOpacity: isZero ? 0.65 : 0.55
+      fillOpacity: isZero ? 0.75 : 0.65
     });
 
     circle.bindTooltip(`
       <div class="text-xs p-1">
-        <div class="font-bold ${isZero ? 'text-red-600' : 'text-orange-600'}">
+        <div class="font-bold ${isZero ? 'text-error' : 'text-tertiary'}">
           ${isZero ? 'Zero-Signal Blackspot' : 'Capacity Bottleneck'}
         </div>
         <div>Population: <strong>${pop.toLocaleString()} people</strong></div>
@@ -406,7 +361,7 @@ function renderProposedSites(sitesGeoJson) {
 
   if (!sitesGeoJson || !sitesGeoJson.features || sitesGeoJson.features.length === 0) {
     if (rankedSitesList) {
-      rankedSitesList.innerHTML = '<div class="text-slate-400 text-center py-3 text-xs">No candidate sites found.</div>';
+      rankedSitesList.innerHTML = '<div class="text-outline text-center py-3 text-xs">No candidate sites found.</div>';
     }
     if (rankedSitesCountBadge) rankedSitesCountBadge.textContent = "0 Sites";
     return;
@@ -428,45 +383,45 @@ function renderProposedSites(sitesGeoJson) {
     // Candidate Marker Pin
     const marker = L.marker([lat, lon], { icon: createProposedIcon(rank) });
     marker.bindPopup(`
-      <div class="text-xs text-slate-800 font-sans p-1">
-        <div class="font-bold text-teal-800 border-b pb-1 mb-1 flex items-center justify-between">
+      <div class="text-xs text-on-surface font-sans p-1">
+        <div class="font-bold text-primary border-b pb-1 mb-1 flex items-center justify-between">
           <span>Proposed Site #${rank}</span>
-          <span class="text-[10px] bg-teal-100 text-teal-900 px-1.5 py-0.5 rounded font-mono font-bold">+${gained} pop</span>
+          <span class="text-[10px] bg-primary-container text-primary px-1.5 py-0.5 rounded font-mono font-bold">+${gained} pop</span>
         </div>
-        <div>Coordinates: <span class="font-mono text-slate-600">${lat.toFixed(4)}, ${lon.toFixed(4)}</span></div>
-        <div>Coverage Boost: <strong class="text-emerald-700">${cumPct}% cumulative</strong></div>
-        <div class="text-[11px] text-slate-500 mt-1">Recommended 4G/5G macro cell installation</div>
+        <div>Coordinates: <span class="font-mono text-outline">${lat.toFixed(4)}, ${lon.toFixed(4)}</span></div>
+        <div>Coverage Boost: <strong class="text-primary">${cumPct}% cumulative</strong></div>
+        <div class="text-[11px] text-on-surface-variant mt-1">Recommended 4G/5G macro cell installation</div>
       </div>
     `);
     layerProposedGroup.addLayer(marker);
 
-    // Proposed Coverage Buffer (Teal ring)
+    // Proposed Coverage Buffer
     const proposedCircle = L.circle([lat, lon], {
       radius: currentRadiusKm * 1000,
-      color: "#0d9488",
+      color: "#953891",
       weight: 1.8,
-      fillColor: "#2dd4bf",
-      fillOpacity: 0.12
+      fillColor: "#fab4fd",
+      fillOpacity: 0.14
     });
     layerProposedGroup.addLayer(proposedCircle);
 
     // Populate Ranked Sites Sidebar Card
     if (rankedSitesList) {
       const item = document.createElement("div");
-      item.className = "flex items-center justify-between p-2 rounded-lg bg-[#142244]/80 hover:bg-[#1c3060] cursor-pointer transition border border-[#203463]/60 group";
+      item.className = "flex items-center justify-between p-2 rounded-lg bg-surface-container/60 hover:bg-surface-container-high cursor-pointer transition border border-outline-variant/30 group";
       item.innerHTML = `
         <div class="flex items-center space-x-2">
-          <span class="w-5 h-5 rounded-full bg-teal-600 group-hover:bg-teal-500 text-white font-bold text-[10px] flex items-center justify-center shadow-sm">
+          <span class="w-5 h-5 rounded-full bg-primary text-white font-bold text-[10px] flex items-center justify-center shadow-sm">
             ${rank}
           </span>
           <div>
-            <div class="font-bold text-slate-200 text-xs">+${gained} people</div>
-            <div class="text-[9.5px] font-mono text-slate-400">${lat.toFixed(3)}, ${lon.toFixed(3)}</div>
+            <div class="font-bold text-on-surface text-xs">+${gained} people</div>
+            <div class="text-[9.5px] font-mono text-outline">${lat.toFixed(3)}, ${lon.toFixed(3)}</div>
           </div>
         </div>
         <div class="text-right">
-          <div class="text-[10px] font-mono font-extrabold text-teal-400">${cumPct}%</div>
-          <div class="text-[9px] text-slate-400 font-medium">coverage</div>
+          <div class="text-[10px] font-mono font-extrabold text-primary">${cumPct}%</div>
+          <div class="text-[9px] text-outline font-medium">coverage</div>
         </div>
       `;
       item.addEventListener("click", () => {
@@ -517,7 +472,7 @@ async function runOptimization() {
 
     // Update Metric Cards
     if (metricZeroSignal) metricZeroSignal.textContent = Math.round(zeroPop).toLocaleString();
-    if (metricZeroSignalSub) metricZeroSignalSub.textContent = `${zeroPct.toFixed(1)}% of district pop`;
+    if (metricZeroSignalSub) metricZeroSignalSub.textContent = `${zeroPct.toFixed(1)}% unserved`;
 
     if (metricBottleneck) metricBottleneck.textContent = Math.round(congPop).toLocaleString();
     const congCount = summary.congested_towers_count !== undefined ? `${summary.congested_towers_count} overloaded` : "overloaded";
@@ -672,19 +627,19 @@ async function initApp() {
 
     if (radiusSlider) {
       radiusSlider.value = currentRadiusKm;
-      updateSliderFill(radiusSlider, "#06b6d4");
+      updateSliderFill(radiusSlider, "#953891", "#f4dde3");
     }
     if (radiusValDisplay) radiusValDisplay.textContent = `${currentRadiusKm.toFixed(1)} km`;
 
     if (towersSlider) {
       towersSlider.value = currentTowerCount;
-      updateSliderFill(towersSlider, "#ec4899");
+      updateSliderFill(towersSlider, "#834889", "#f4dde3");
     }
     if (towersValDisplay) towersValDisplay.textContent = currentTowerCount;
 
     if (capacitySlider) {
       capacitySlider.value = currentCapacityThresh;
-      updateSliderFill(capacitySlider, "#10b981");
+      updateSliderFill(capacitySlider, "#a93700", "#f4dde3");
     }
     if (capacityValDisplay) capacityValDisplay.textContent = `${currentCapacityThresh.toLocaleString()} users`;
 
@@ -698,34 +653,22 @@ async function initApp() {
     if (sidebarExpandBtn) {
       sidebarExpandBtn.addEventListener("click", () => toggleSidebar(false));
     }
-
-    // 6. Wire Unified Floating Control Widget
-    if (toolbarLayersBtn) {
-      toolbarLayersBtn.addEventListener("click", () => {
-        if (activeWidgetTab === "layers") setWidgetTab("none");
-        else setWidgetTab("layers");
-      });
-    }
-    if (toolbarLegendBtn) {
-      toolbarLegendBtn.addEventListener("click", () => {
-        if (activeWidgetTab === "legend") setWidgetTab("none");
-        else setWidgetTab("legend");
-      });
-    }
-    if (toolbarMinimizeBtn) {
-      toolbarMinimizeBtn.addEventListener("click", () => {
-        if (activeWidgetTab === "none") setWidgetTab("layers");
-        else setWidgetTab("none");
+    if (toggleAnalyticsBtn && analyticsPanel) {
+      toggleAnalyticsBtn.addEventListener("click", () => {
+        analyticsPanel.classList.toggle("collapsed-panel");
+        setTimeout(() => {
+          if (map) map.invalidateSize({ debounceMoveEvents: true });
+        }, 350);
       });
     }
 
-    // 7. Wire Slider Event Handlers with Real-Time Track Fills
+    // 6. Wire Slider Event Handlers with Real-Time Track Fills
     if (radiusSlider) {
       radiusSlider.addEventListener("input", (e) => {
         currentRadiusKm = parseFloat(e.target.value);
         if (radiusValDisplay) radiusValDisplay.textContent = `${currentRadiusKm.toFixed(1)} km`;
         if (paramStatusText) paramStatusText.textContent = `Calculated for R=${currentRadiusKm}km, K=${currentTowerCount}`;
-        updateSliderFill(radiusSlider, "#06b6d4");
+        updateSliderFill(radiusSlider, "#953891", "#f4dde3");
         triggerDebouncedOptimization();
       });
     }
@@ -735,7 +678,7 @@ async function initApp() {
         currentTowerCount = parseInt(e.target.value);
         if (towersValDisplay) towersValDisplay.textContent = currentTowerCount;
         if (paramStatusText) paramStatusText.textContent = `Calculated for R=${currentRadiusKm}km, K=${currentTowerCount}`;
-        updateSliderFill(towersSlider, "#ec4899");
+        updateSliderFill(towersSlider, "#834889", "#f4dde3");
         triggerDebouncedOptimization();
       });
     }
@@ -744,20 +687,20 @@ async function initApp() {
       capacitySlider.addEventListener("input", (e) => {
         currentCapacityThresh = parseInt(e.target.value);
         if (capacityValDisplay) capacityValDisplay.textContent = `${currentCapacityThresh.toLocaleString()} users`;
-        updateSliderFill(capacitySlider, "#10b981");
+        updateSliderFill(capacitySlider, "#a93700", "#f4dde3");
         triggerDebouncedOptimization();
       });
     }
 
-    // 8. Wire Deficit Filter Toggle Buttons
+    // 7. Wire Deficit Filter Toggle Buttons
     if (deficitToggleGroup) {
       const buttons = deficitToggleGroup.querySelectorAll("button");
       buttons.forEach((btn) => {
         btn.addEventListener("click", () => {
           buttons.forEach((b) => {
-            b.className = "flex-1 py-1.5 px-3 rounded-full text-xs font-bold bg-[#142244] hover:bg-[#1a2c58] text-slate-300 flex items-center justify-center space-x-1.5 border border-[#203463] transition";
+            b.className = "flex-1 py-1 px-2 rounded-lg text-xs font-semibold bg-surface-container-high hover:bg-surface-variant text-on-surface flex items-center justify-center space-x-1 transition";
           });
-          btn.className = "flex-1 py-1.5 px-3 rounded-full text-xs font-extrabold bg-cyan-600 hover:bg-cyan-500 text-white shadow-[0_0_10px_rgba(6,182,212,0.3)] transition flex items-center justify-center space-x-1.5";
+          btn.className = "flex-1 py-1 px-2 rounded-lg text-xs font-bold bg-primary text-white shadow-sm transition flex items-center justify-center space-x-1";
 
           currentDeficitFilter = btn.getAttribute("data-type") || "all";
           renderDeficits();
@@ -765,7 +708,7 @@ async function initApp() {
       });
     }
 
-    // 9. Wire Layer Checkboxes
+    // 8. Wire Layer Checkboxes
     if (layerProposedCheck) {
       layerProposedCheck.addEventListener("change", (e) => {
         if (e.target.checked) map.addLayer(layerProposedGroup);
@@ -797,21 +740,18 @@ async function initApp() {
       });
     }
 
-    // 10. Wire Export Buttons
+    // 9. Wire Export Buttons
     if (exportGeoJsonBtn) exportGeoJsonBtn.addEventListener("click", exportGeoJson);
     if (exportCsvBtn) exportCsvBtn.addEventListener("click", exportCsv);
 
-    // 11. Initial Data Load
+    // 10. Initial Data Load
     await Promise.all([loadExistingTowers(), loadWaterBodies()]);
     await runOptimization();
 
-    // 12. Support URL state parameters (for deep-linking & screenshots)
+    // 11. Support URL state parameters (for deep-linking & screenshots)
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("collapsed") === "true") {
       toggleSidebar(true);
-    }
-    if (urlParams.get("tab") === "legend") {
-      setWidgetTab("legend");
     }
 
   } catch (err) {
