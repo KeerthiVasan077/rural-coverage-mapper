@@ -191,13 +191,14 @@ function updateDistrictCard(district) {
 
   if (districtBadge) {
     if (isCongested) {
-      districtBadge.className = "inline-block px-2.5 py-0.5 rounded text-[10px] font-extrabold bg-tertiary-container text-tertiary border border-tertiary/30 uppercase tracking-wider";
+      districtBadge.className = "inline-block px-2.5 py-0.5 rounded text-[10px] font-extrabold bg-amber-50 text-amber-900 border border-amber-200 uppercase tracking-wider shadow-sm";
       districtBadge.textContent = "Capacity Bottleneck Belt";
     } else if (isZeroSignal) {
-      districtBadge.className = "inline-block px-2.5 py-0.5 rounded text-[10px] font-extrabold bg-error-container text-error border border-error/30 uppercase tracking-wider";
+      // High-contrast soft white/light gray background with dark red text for superior readability
+      districtBadge.className = "inline-block px-2.5 py-0.5 rounded text-[10px] font-extrabold bg-slate-50 text-[#991b1b] border border-red-200 uppercase tracking-wider shadow-sm";
       districtBadge.textContent = "Zero-Signal Forest Blackspot";
     } else {
-      districtBadge.className = "inline-block px-2.5 py-0.5 rounded text-[10px] font-extrabold bg-primary-container text-primary border border-primary/30 uppercase tracking-wider";
+      districtBadge.className = "inline-block px-2.5 py-0.5 rounded text-[10px] font-extrabold bg-purple-50 text-purple-900 border border-purple-200 uppercase tracking-wider shadow-sm";
       districtBadge.textContent = "Sparse Terrain Settlement";
     }
   }
@@ -380,7 +381,7 @@ function renderProposedSites(sitesGeoJson) {
     const gained = p.people_gained ? Math.round(p.people_gained).toLocaleString() : "N/A";
     const cumPct = p.cumulative_coverage_pct ? p.cumulative_coverage_pct.toFixed(1) : "";
 
-    // Candidate Marker Pin
+    // Candidate Marker Pin with Anchored Caret Pointer
     const marker = L.marker([lat, lon], { icon: createProposedIcon(rank) });
     marker.bindPopup(`
       <div class="text-xs text-on-surface font-sans p-1">
@@ -392,7 +393,11 @@ function renderProposedSites(sitesGeoJson) {
         <div>Coverage Boost: <strong class="text-primary">${cumPct}% cumulative</strong></div>
         <div class="text-[11px] text-on-surface-variant mt-1">Recommended 4G/5G macro cell installation</div>
       </div>
-    `);
+    `, {
+      className: "proposed-site-popup",
+      offset: [0, -12],
+      closeButton: true
+    });
     layerProposedGroup.addLayer(marker);
 
     // Proposed Coverage Buffer

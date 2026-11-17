@@ -160,6 +160,37 @@
       box-shadow: 0 0 10px rgba(149, 56, 145, 0.6), 0 2px 4px rgba(0,0,0,0.25);
     }
 
+    /* Proposed Site Map Popup with Distinct Pointer Caret */
+    .proposed-site-popup .leaflet-popup-content-wrapper {
+      background: #ffffff !important;
+      color: #24181d !important;
+      border: 1.5px solid #953891;
+      border-radius: 10px;
+      box-shadow: 0 4px 14px rgba(149, 56, 145, 0.25), 0 2px 6px rgba(0,0,0,0.12);
+      padding: 2px;
+    }
+    .proposed-site-popup .leaflet-popup-content {
+      margin: 8px 12px;
+      line-height: 1.4;
+    }
+    .proposed-site-popup .leaflet-popup-tip-container {
+      width: 28px;
+      height: 14px;
+      margin-top: -1px;
+      overflow: visible;
+    }
+    .proposed-site-popup .leaflet-popup-tip {
+      background: #ffffff !important;
+      border-bottom: 2px solid #953891;
+      border-right: 2px solid #953891;
+      width: 14px;
+      height: 14px;
+      padding: 1px;
+      margin: -7px auto 0;
+      transform: rotate(45deg);
+      box-shadow: 2px 2px 4px rgba(149, 56, 145, 0.25);
+    }
+
     /* Existing Macro Tower Pin */
     .existing-tower-icon {
       display: flex;
@@ -240,22 +271,19 @@
   <header class="h-14 bg-surface/90 backdrop-blur-xl z-40 flex items-center justify-between px-gutter shadow-[0_1px_8px_rgba(0,0,0,0.06)] border-b border-surface-variant shrink-0">
     <!-- Brand / Title -->
     <div class="flex items-center gap-gutter">
-      <div class="flex items-center gap-space-sm">
-        <div class="w-8 h-8 rounded-lg bg-primary-container text-primary flex items-center justify-center shadow-sm">
-          <span class="material-symbols-outlined text-[20px]">radar</span>
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-primary text-white flex items-center justify-center shadow-sm">
+          <span class="material-symbols-outlined text-[22px]">radar</span>
         </div>
-        <div class="flex flex-col">
-          <span class="font-headline-sm text-headline-sm text-primary tracking-tight font-bold">TerraSignal</span>
-          <span class="font-label-sm text-[10px] text-outline font-medium tracking-wide">Rural Coverage Gap Mapper • SW-27</span>
-        </div>
+        <span class="text-[20px] font-black tracking-tight text-[#380038] font-sans">TerraSignal</span>
       </div>
 
       <div class="h-6 w-px bg-surface-variant"></div>
 
-      <!-- District Selector Dropdown -->
-      <div class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-1 rounded-lg border border-outline-variant/40 hover:border-primary/50 transition">
+      <!-- District Selector Dropdown (Height aligned: h-9) -->
+      <div class="h-9 flex items-center gap-space-xs bg-surface-container-low px-3 rounded-lg border border-outline-variant/40 hover:border-primary/50 transition shadow-sm">
         <span class="material-symbols-outlined text-secondary text-[16px]">map</span>
-        <select id="zoneSelector" class="bg-transparent text-xs font-semibold text-on-surface focus:outline-none cursor-pointer pr-2">
+        <select id="zoneSelector" class="bg-transparent text-xs font-bold text-on-surface focus:outline-none cursor-pointer pr-1">
           <option value="bihar-sitamarhi" selected>Bihar: Sitamarhi &amp; Sheohar [Congested Plain]</option>
           <option value="odisha-malkangiri">Odisha: Malkangiri &amp; Koraput [Extreme Blackspot]</option>
           <option value="up-shravasti">UP: Shravasti &amp; Bahraich [Terai Congested]</option>
@@ -268,40 +296,58 @@
       </div>
     </div>
 
-    <!-- Center Status & Telemetry -->
-    <div class="hidden xl:flex items-center gap-gutter-sm bg-surface-container-lowest px-space-md py-1 rounded-lg border border-surface-variant/60 shadow-sm">
-      <div class="flex items-center gap-space-xs font-label-sm text-label-sm text-on-surface-variant">
-        <span class="material-symbols-outlined text-primary text-[15px]">my_location</span>
-        <span class="font-mono">WorldPop 100m • OpenCellID Macro</span>
+    <!-- Center Unified Control Bar with Vertical Dividers ( | ) (Height aligned: h-9) -->
+    <div class="hidden xl:flex items-center h-9 px-space-md bg-surface-container-lowest rounded-lg border border-surface-variant/80 shadow-sm gap-2.5 text-xs">
+      <div class="flex items-center gap-1 font-label-sm text-on-surface-variant">
+        <span class="material-symbols-outlined text-primary text-[15px]">grid_4x4</span>
+        <span class="font-mono font-medium text-[11px]">WorldPop 100m</span>
       </div>
-      <div class="h-3 w-px bg-surface-variant"></div>
-      <div class="flex items-center gap-space-xs font-label-sm text-label-sm text-tertiary">
-        <span class="h-2 w-2 rounded-full bg-tertiary animate-pulse"></span>
-        <span id="demoModeBadge" class="font-bold">National Deficit Framework Active</span>
+      
+      <span class="text-outline-variant select-none">|</span>
+
+      <div class="flex items-center gap-1 font-label-sm text-on-surface-variant">
+        <span class="material-symbols-outlined text-secondary text-[15px]">cell_tower</span>
+        <span class="font-mono font-medium text-[11px]">OpenCellID LTE/NR</span>
+      </div>
+
+      <span class="text-outline-variant select-none">|</span>
+
+      <div class="flex items-center gap-1 font-label-sm text-on-surface-variant">
+        <span class="material-symbols-outlined text-[#0284c7] text-[15px]">water_drop</span>
+        <span class="font-mono font-medium text-[11px]">OSM Water Excl.</span>
+      </div>
+
+      <span class="text-outline-variant select-none">|</span>
+
+      <div class="flex items-center gap-1.5 font-label-sm text-tertiary">
+        <span class="h-2 w-2 rounded-full bg-tertiary animate-pulse shrink-0"></span>
+        <span id="demoModeBadge" class="font-bold text-[11px]">National Deficit Framework Active</span>
       </div>
     </div>
 
-    <!-- Right Action Controls -->
+    <!-- Right Action Controls (Height aligned: h-9) -->
     <div class="flex items-center gap-space-sm">
       <!-- Toggle Sidebar Drawer Button -->
-      <button id="sidebarCollapseBtn" class="flex items-center gap-space-xs bg-surface-container-high hover:bg-surface-variant text-on-surface px-space-sm py-1.5 rounded-lg text-label-sm font-label-sm font-semibold transition border border-outline-variant/40" type="button" title="Toggle Spatial Parameters Drawer">
+      <button id="sidebarCollapseBtn" class="h-9 flex items-center gap-space-xs bg-surface-container-high hover:bg-surface-variant text-on-surface px-3 rounded-lg text-label-sm font-label-sm font-semibold transition border border-outline-variant/40 shadow-sm" type="button" title="Toggle Spatial Parameters Drawer">
         <span class="material-symbols-outlined text-[16px]">tune</span>
         <span>Controls</span>
       </button>
 
       <!-- Toggle Right Analytics Button -->
-      <button id="toggleAnalyticsBtn" class="flex items-center gap-space-xs bg-surface-container-high hover:bg-surface-variant text-on-surface px-space-sm py-1.5 rounded-lg text-label-sm font-label-sm font-semibold transition border border-outline-variant/40" type="button" title="Toggle Analytics Panel">
+      <button id="toggleAnalyticsBtn" class="h-9 flex items-center gap-space-xs bg-surface-container-high hover:bg-surface-variant text-on-surface px-3 rounded-lg text-label-sm font-label-sm font-semibold transition border border-outline-variant/40 shadow-sm" type="button" title="Toggle Analytics Panel">
         <span class="material-symbols-outlined text-[16px]">query_stats</span>
         <span>Analytics</span>
       </button>
 
+      <div class="h-6 w-px bg-surface-variant mx-0.5"></div>
+
       <!-- Export Buttons -->
       <div class="flex items-center gap-1">
-        <button id="exportGeoJsonBtn" class="flex items-center gap-1 bg-primary-container hover:bg-primary text-on-primary-container hover:text-white px-2.5 py-1.5 rounded-lg text-label-sm font-label-sm font-bold transition shadow-sm border border-primary/20" type="button" title="Export Proposed Sites GeoJSON">
+        <button id="exportGeoJsonBtn" class="h-9 flex items-center gap-1 bg-primary hover:bg-primary/90 text-white px-3 rounded-lg text-label-sm font-label-sm font-bold transition shadow-sm border border-primary/20" type="button" title="Export Proposed Sites GeoJSON">
           <span class="material-symbols-outlined text-[15px]">download</span>
           <span>GeoJSON</span>
         </button>
-        <button id="exportCsvBtn" class="flex items-center gap-1 bg-surface-container-highest hover:bg-primary-container text-on-surface px-2.5 py-1.5 rounded-lg text-label-sm font-label-sm font-bold transition border border-outline-variant/40" type="button" title="Export Proposed Sites CSV">
+        <button id="exportCsvBtn" class="h-9 flex items-center gap-1 bg-surface-container-highest hover:bg-surface-variant text-on-surface px-3 rounded-lg text-label-sm font-label-sm font-bold transition border border-outline-variant/40 shadow-sm" type="button" title="Export Proposed Sites CSV">
           <span>CSV</span>
         </button>
       </div>
@@ -314,8 +360,8 @@
     <!-- LEFT-HAND CONTROL DRAWER (Spatial Layers & Scenario Parameters) -->
     <aside id="sidebarDrawer" class="relative z-20 w-[350px] shrink-0 h-full flex flex-col bg-surface-container-low/95 backdrop-blur-xl border-r border-surface-variant shadow-lg overflow-y-auto">
       
-      <!-- Panel Header -->
-      <div class="p-gutter-sm bg-surface-container-lowest/90 sticky top-0 z-30 shadow-sm flex items-center justify-between border-b border-surface-variant">
+      <!-- Panel Header (Solid opaque background prevents scrolled text watermark bleedthrough) -->
+      <div class="p-gutter-sm bg-white sticky top-0 z-30 shadow-sm flex items-center justify-between border-b border-surface-variant">
         <div class="flex items-center gap-space-xs">
           <span class="material-symbols-outlined text-primary text-[18px]">tune</span>
           <span class="font-label-md text-label-md uppercase tracking-wider text-on-surface font-bold">Spatial Matrix &amp; Engine</span>
@@ -404,7 +450,7 @@
         <!-- SECTION 3: DISTRICT OVERVIEW CALLOUT -->
         <div class="p-space-sm bg-surface-container-lowest/90 rounded-xl border border-surface-variant shadow-sm flex flex-col gap-1.5">
           <div class="flex items-center justify-between">
-            <div id="districtBadge" class="inline-block px-2 py-0.5 rounded text-[10px] font-extrabold bg-tertiary-container text-tertiary border border-tertiary/30 uppercase tracking-wider">
+            <div id="districtBadge" class="inline-block px-2.5 py-0.5 rounded text-[10px] font-extrabold bg-slate-50 text-[#991b1b] border border-red-200 uppercase tracking-wider shadow-sm">
               Capacity Bottleneck Belt
             </div>
             <span class="font-label-sm text-[10px] text-outline font-mono">DoT Audit Baseline</span>
@@ -693,6 +739,6 @@
   </div>
 
   <!-- Dynamic App Binding Script -->
-  <script src="/static/app.js?v=4.0"></script>
+  <script src="/static/app.js?v=4.2"></script>
 </body>
 </html>
